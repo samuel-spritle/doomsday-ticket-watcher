@@ -34,6 +34,7 @@ jobs:
           DISTRICT_URL: ${{ vars.DISTRICT_URL }}
           # 0 = one check per run. Set repo variable RUN_SECONDS=240 to poll every ~35s
           # inside each run (near-continuous, but uses far more Actions minutes).
+          HEARTBEAT_MINUTES: ${{ vars.HEARTBEAT_MINUTES || '60' }}  # status message interval; 0 = off
           RUN_SECONDS: ${{ vars.RUN_SECONDS || '0' }}
         run: python watcher.py
 

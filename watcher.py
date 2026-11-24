@@ -34,6 +34,7 @@ TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 ADMIN_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 RUN_SECONDS = int(os.getenv("RUN_SECONDS", "0") or 0)
 STATE_FILE = Path(os.getenv("STATE_FILE", "state/state.json"))
+HEARTBEAT_MINUTES = int(os.getenv("HEARTBEAT_MINUTES", "60") or 0)  # 0 = no periodic status message
 
 MIN_INTERVAL, MAX_INTERVAL = 25, 45      # only used when RUN_SECONDS > 0
 FAIL_ALERT_THRESHOLD = 10                # consecutive failed fetches before warning you
@@ -189,6 +190,19 @@ HELP = (
 )
 
 
+def status_text(state: dict) -> str:
+    parts = ["Watcher is alive on GitHub Actions",
+             f"Subscribers: {len(state['subscribers'])}\n"]
+    for k, c in SITES.items():
+        s = state["sites"][k]
+        known = s["known"] or []
+        parts.append(
+            f"{c['label'].upper()} ({len(known)} active)\n"
+            f"Newly added:\n{fmt_list(s['new'])}\n"
+            f"All active:\n{fmt_list(known)}\n")
+    return "\n".join(parts)
+
+
 def process_updates(state: dict):
     if not TOKEN:
         return
@@ -237,16 +251,7 @@ def process_updates(state: dict):
                 send(cid, "Active URLs:\n\n" + "\n\n".join(
                     f"{c['label']}:\n{state['sites'][k]['url']}" for k, c in SITES.items()))
             elif text in {"ping", "/ping", "status", "/status"}:
-                parts = ["Pong! Watcher is alive on GitHub Actions",
-                         f"Subscribers: {len(state['subscribers'])}\n"]
-                for k, c in SITES.items():
-                    s = state["sites"][k]
-                    known = s["known"] or []
-                    parts.append(
-                        f"{c['label'].upper()} ({len(known)} active)\n"
-                        f"Newly added:\n{fmt_list(s['new'])}\n"
-                        f"All active:\n{fmt_list(known)}\n")
-                send(cid, "\n".join(parts))
+                send(cid, status_text(state))
             elif text in {"/start", "/help", "help"}:
                 send(cid, HELP)
 
@@ -365,6 +370,9 @@ def main():
             except Exception as e:
                 log(f"[ERROR] {key}: {e}")
             time.sleep(random.uniform(2, 4))
+        if HEARTBEAT_MINUTES and time.time() - state.get("last_heartbeat", 0) >= HEARTBEAT_MINUTES * 60:
+            broadcast(state, "Hourly update\n\n" + status_text(state))
+            state["last_heartbeat"] = time.time()
         save_state(state)
 
         if time.time() + MAX_INTERVAL >= deadline:
