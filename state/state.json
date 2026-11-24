@@ -1,6 +1,8 @@
 {
-  "offset": 0,
-  "subscribers": [],
+  "offset": 448166452,
+  "subscribers": [
+    "1230434574"
+  ],
   "sites": {
     "district": {
       "url": "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-MV176735?frmtid=Mm5dpqTqJz",
@@ -18,15 +20,15 @@
         "Sree Lakshmi Cinemas A/C 2K Dolby Atmos, Thiruninravur, Chennai"
       ],
       "new": [],
-      "fails": 0
+      "fails": 1
     },
     "bms": {
       "url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306",
       "env_url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306",
       "known": null,
       "new": [],
-      "fails": 1
+      "fails": 2
     }
   },
-  "last_heartbeat": 1795516231.6731496
+  "last_heartbeat": 1795553046.522171
 }
