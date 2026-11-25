@@ -20,15 +20,15 @@
         "Sree Lakshmi Cinemas A/C 2K Dolby Atmos, Thiruninravur, Chennai"
       ],
       "new": [],
-      "fails": 1
+      "fails": 2
     },
     "bms": {
       "url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306",
       "env_url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306",
       "known": null,
       "new": [],
-      "fails": 2
+      "fails": 3
     }
   },
-  "last_heartbeat": 1795553046.522171
+  "last_heartbeat": 1795578444.921852
 }
