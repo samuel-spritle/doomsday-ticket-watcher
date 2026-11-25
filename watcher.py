@@ -19,6 +19,7 @@ import os
 import random
 import re
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from curl_cffi import requests as cr
@@ -34,7 +35,9 @@ TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 ADMIN_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 RUN_SECONDS = int(os.getenv("RUN_SECONDS", "0") or 0)
 STATE_FILE = Path(os.getenv("STATE_FILE", "state/state.json"))
-HEARTBEAT_MINUTES = int(os.getenv("HEARTBEAT_MINUTES", "60") or 0)  # 0 = no periodic status message
+HEARTBEAT_MINUTES = int(os.getenv("HEARTBEAT_MINUTES", "10") or 0)  # 0 = no periodic status message
+
+HEARTBEAT_DAYS = {"12-17", "12-18"}      # heartbeat only on these IST dates (MM-DD)
 
 MIN_INTERVAL, MAX_INTERVAL = 25, 45      # only used when RUN_SECONDS > 0
 FAIL_ALERT_THRESHOLD = 10                # consecutive failed fetches before warning you
@@ -43,10 +46,13 @@ DEFAULT_BMS_URL = os.getenv("BMS_URL") or (
     "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/"
     "ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306"
 )
-DEFAULT_DISTRICT_URL = os.getenv("DISTRICT_URL") or (
+DEFAULT_BMS_URL_18 = DEFAULT_BMS_URL.replace("20261217", "20261218")  # BMS pages are per-date
+_DISTRICT_BASE = re.sub(r"[?&]fromdate=[^&]*", "", os.getenv("DISTRICT_URL") or (
     "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-"
     "MV176735?frmtid=Mm5dpqTqJz"
-)
+))  # District pages are per-date via &fromdate=YYYY-MM-DD
+DEFAULT_DISTRICT_URL = _DISTRICT_BASE + "&fromdate=2026-12-17"
+DEFAULT_DISTRICT_URL_18 = _DISTRICT_BASE + "&fromdate=2026-12-18"
 
 HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -74,23 +80,26 @@ def _visible_lines(html: str):
 
 
 def extract_district(html: str) -> set[str]:
-    out: set[str] = set()
+    """Cinemas that have sessions for the page's date (pageData.nearbyCinemas in __NEXT_DATA__)."""
     m = re.search(r'<script[^>]*id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, flags=re.DOTALL | re.IGNORECASE)
-    if m:
-        try:
-            raw = json.dumps(json.loads(m.group(1)))
-            for x in re.finditer(r'"(?:cinemaName|venueName|theaterName|cinema_name)"\s*:\s*"([^"]+)"', raw):
-                if len(x.group(1).strip()) > 3:
-                    out.add(x.group(1).strip())
-        except json.JSONDecodeError:
-            pass
-    if not out:
-        for x in re.finditer(r'href="[^"]*/movies/[^"]*cinema[^"]*"[^>]*>([^<]+)<', html, flags=re.IGNORECASE):
-            name = re.sub(r"\s+", " ", x.group(1)).strip()
-            if len(name) > 3:
-                out.add(name)
-    if not out:
-        out = {l for l in _visible_lines(html) if CHAIN_RE.match(l)}
+    if not m:
+        return set()
+    out: set[str] = set()
+
+    def walk(o):
+        if isinstance(o, dict):
+            for c in o.get("nearbyCinemas") or []:
+                if c.get("sessions"):
+                    out.add(c["cinemaInfo"]["name"].strip())
+            for v in o.values():
+                walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+    try:
+        walk(json.loads(m.group(1)))
+    except (json.JSONDecodeError, KeyError, TypeError):
+        pass
     return out
 
 
@@ -114,12 +123,18 @@ def extract_bms(html: str) -> set[str]:
 
 
 SITES = {
-    "district": dict(label="District", domain="district.in",
+    "district": dict(label="District Dec 17", domain="district.in",
                      referer="https://www.district.in/", extract=extract_district,
                      default_url=DEFAULT_DISTRICT_URL),
-    "bms": dict(label="BookMyShow", domain="bookmyshow.com",
+    "district18": dict(label="District Dec 18", domain="district.in",
+                       referer="https://www.district.in/", extract=extract_district,
+                       default_url=DEFAULT_DISTRICT_URL_18),
+    "bms": dict(label="BookMyShow Dec 17", domain="bookmyshow.com",
                 referer="https://in.bookmyshow.com/", extract=extract_bms,
                 default_url=DEFAULT_BMS_URL),
+    "bms18": dict(label="BookMyShow Dec 18", domain="bookmyshow.com",
+                  referer="https://in.bookmyshow.com/", extract=extract_bms,
+                  default_url=DEFAULT_BMS_URL_18),
 }
 
 
@@ -370,8 +385,10 @@ def main():
             except Exception as e:
                 log(f"[ERROR] {key}: {e}")
             time.sleep(random.uniform(2, 4))
-        if HEARTBEAT_MINUTES and time.time() - state.get("last_heartbeat", 0) >= HEARTBEAT_MINUTES * 60:
-            broadcast(state, "Hourly update\n\n" + status_text(state))
+        ist_day = datetime.now(timezone(timedelta(hours=5, minutes=30))).strftime("%m-%d")
+        if (HEARTBEAT_MINUTES and ist_day in HEARTBEAT_DAYS
+                and time.time() - state.get("last_heartbeat", 0) >= HEARTBEAT_MINUTES * 60 - 60):
+            broadcast(state, "Status update\n\n" + status_text(state))
             state["last_heartbeat"] = time.time()
         save_state(state)
 
