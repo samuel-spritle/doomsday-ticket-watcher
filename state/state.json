@@ -5,29 +5,32 @@
   ],
   "sites": {
     "district": {
-      "url": "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-MV176735?frmtid=Mm5dpqTqJz",
-      "env_url": "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-MV176735?frmtid=Mm5dpqTqJz",
-      "known": [
-        "AGS Cinemas OMR, Navlur, Chennai",
-        "AGS Cinemas, Villivakkam, Chennai",
-        "EGA Cinemas (RGB LASER | Dolby Audio | Couple Sofa), Kilpauk, Chennai",
-        "Miraj Cinemas : Sekaran Mall, Perrumbakkam",
-        "Murugan Cinemas PLF 4K, Ambattur, Chennai",
-        "Nadhamuni Cinema, Villivakkam, Chennai",
-        "SK Cinema 4K 3D A/C Dolby 7.1, Alandur, Chennai",
-        "Santhalinga Cinemas Multiplex Dolby Atmos 4K Laser, Oragadam",
-        "Seven Screen's Cinemas, Kilambakkam, Chennai",
-        "Sree Lakshmi Cinemas A/C 2K Dolby Atmos, Thiruninravur, Chennai"
-      ],
+      "url": "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-MV176735?frmtid=Mm5dpqTqJz&fromdate=2026-12-17",
+      "env_url": "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-MV176735?frmtid=Mm5dpqTqJz&fromdate=2026-12-17",
+      "known": null,
       "new": [],
-      "fails": 2
+      "fails": 1
     },
     "bms": {
       "url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306",
       "env_url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306",
       "known": null,
       "new": [],
-      "fails": 3
+      "fails": 4
+    },
+    "district18": {
+      "url": "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-MV176735?frmtid=Mm5dpqTqJz&fromdate=2026-12-18",
+      "env_url": "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-MV176735?frmtid=Mm5dpqTqJz&fromdate=2026-12-18",
+      "known": null,
+      "new": [],
+      "fails": 1
+    },
+    "bms18": {
+      "url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261218?etCodes=*&language=english&refEventCode=ET00526306",
+      "env_url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261218?etCodes=*&language=english&refEventCode=ET00526306",
+      "known": null,
+      "new": [],
+      "fails": 1
     }
   },
   "last_heartbeat": 1795578444.921852
