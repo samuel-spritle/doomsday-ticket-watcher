@@ -16,14 +16,14 @@
         "Seven Screen's Cinemas, Kilambakkam, Chennai"
       ],
       "new": [],
-      "fails": 2
+      "fails": 3
     },
     "bms": {
       "url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306",
       "env_url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261217?etCodes=*&language=english&refEventCode=ET00526306",
       "known": null,
       "new": [],
-      "fails": 13
+      "fails": 14
     },
     "district18": {
       "url": "https://www.district.in/movies/avengers-doomsday-movie-tickets-in-chennai-MV176735?frmtid=Mm5dpqTqJz&fromdate=2026-12-18",
@@ -37,14 +37,14 @@
         "Seven Screen's Cinemas, Kilambakkam, Chennai"
       ],
       "new": [],
-      "fails": 2
+      "fails": 3
     },
     "bms18": {
       "url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261218?etCodes=*&language=english&refEventCode=ET00526306",
       "env_url": "https://in.bookmyshow.com/movies/chennai/avengers-doomsday/buytickets/ET00526306/20261218?etCodes=*&language=english&refEventCode=ET00526306",
       "known": null,
       "new": [],
-      "fails": 10
+      "fails": 11
     }
   },
   "last_heartbeat": 1795578444.921852
